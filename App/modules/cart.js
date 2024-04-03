@@ -1,20 +1,26 @@
 const {model , Schema} = require('mongoose')
 
 const cartSchema =new Schema({
-    retailerId : {
+    retailerId :{
         type : Schema.Types.ObjectId,
         ref  : 'User'
     },
     products :[{
-            type : Schema.Types.ObjectId,
-            ref  : 'Product'
-          }],
-    quantity : {
-        type : Number ,
-        default : 1
-    }      
-    
-},{timestamps : true})
+            productId:{
+                type : Schema.Types.ObjectId,
+                ref  : 'Product' 
+            },
+            quantity : {
+                type : Number,
+                default : 1
+            }}],
+    TotalPrice : Number,
+    status: {
+        type: String,
+        enum: ['active', 'completed', 'abandoned'],
+        default: 'active'
+    }
+    },{timestamps : true})
 
 const Cart = model('Cart',cartSchema)
-module.exports = Cart
+module.exports = Cart;

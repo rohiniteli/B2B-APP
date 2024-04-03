@@ -8,7 +8,18 @@ const productSchema = {
             errorMessage :'userName is required' 
         },
         trim : true,
+        custom :{
+            options : async function(value,{req}){
+                const product = await Product.findOne({productName:value})
+                if(!product){
+                    return true
+                }else{
+                    throw new Error('product name already exist')
+                }
+            }
+          }
          },
+         
     categoryId :{
         notEmpty :{
             errorMessage :'categoryid is required'

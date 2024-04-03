@@ -1,6 +1,5 @@
 const {validationResult} = require('express-validator')
 const Category = require('../modules/category')
-
 const categoryCtlr ={}
 
 categoryCtlr.creation =async (req,res)=>{
@@ -14,7 +13,7 @@ categoryCtlr.creation =async (req,res)=>{
         if(req.file){
             image = req.file.path;
         } 
-        const newCategory =await new Category({...body ,image});
+        const newCategory = await new Category({...body ,image});
         await newCategory.save();
         res.status(201).json({ message: 'Category created successfully', category: newCategory });
     } catch (error) {
@@ -30,7 +29,7 @@ categoryCtlr.update = async (req, res) => {
     try {
         const {body} = req
         const id = req.params.id;
-        let category = await Category.findByIdAndUpdate({_id:id, eployeeId:req.currentUser.id},body,{new:true} );
+        let category = await Category.findByIdAndUpdate({_id:id, employeeId:req.currentUser.id},body,{new:true} );
         if (!category) {
             return res.status(404).json({ message: 'Category not found' });
          }
@@ -64,5 +63,5 @@ categoryCtlr.allcategory = async(req, res)=>{
       res.status(400).json({errors : error.array()})
     }
 }
-    
+
 module.exports= categoryCtlr

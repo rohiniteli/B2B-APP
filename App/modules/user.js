@@ -7,10 +7,19 @@ userSchema = new Schema({
      email : String,
      mobileNo : Number,
      password: String,
-     role :  String
+     role: {
+        type: String,
+        enum: ['admin','vendor','retailer', 'employee'],
+        default: 'employee'
+    },
+    verified: {
+        type: Boolean,
+        default: function () {
+            return this.role === 'employee' ? false : true
+        }
+    },
     }, {timestamps: true})
 
 const User = model('User', userSchema)
-
- module.exports = User
+module.exports = User
      
