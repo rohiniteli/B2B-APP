@@ -7,7 +7,7 @@ const categoryValidation = {
         },
         custom :{
             options : async function(value,{req}){
-                const category = await Category.find({categoryName:value})
+                const category = await Category.findOne({categoryName:value})
                 if(!category){
                     return true
                 }else{
@@ -35,7 +35,7 @@ const categoryValidation = {
 }
 
 
-const categoryUdadete = {
+const categoryUpdate = {
     categoryName : {
         notEmpty :{
             errorMessage : 'category name is required' 
@@ -61,5 +61,5 @@ const categoryUdadete = {
 
 module.exports = {
     categoryValidation :categoryValidation,
-    categoryUdadete:categoryUdadete
+    categoryUpdate:categoryUpdate
 }

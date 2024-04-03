@@ -1,11 +1,7 @@
 const {model , Schema} = require('mongoose')
 
 const GRNSchema =new Schema({
-    VendorId : {
-        type : Schema.Types.ObjectId,
-        ref  : 'User'
-    },
-    products :[{
+   products :[{
             type : Schema.Types.ObjectId,
             ref  : 'Product'
           }],

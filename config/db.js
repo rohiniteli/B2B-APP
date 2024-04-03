@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 
 const configureDb = async()=>{
+    const url = process.env.DB_URL
+    const name = process.env.DB_NAME
     try{
-        const db = await mongoose.connect('mongodb://127.0.0.1:27017/B2B-APP')
-        console.log('connected to mongodb')
+        const db = await mongoose.connect(`${url}/${name}`)
+        console.log('connected to mongodb', db.connections[0].name)
     }
     catch(err){
         console.log(err)
