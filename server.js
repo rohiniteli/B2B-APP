@@ -12,7 +12,7 @@ configureDb()
 //validations
 const {userRegisterSchema, userLoginSchema} = require('./App/validations/userValidation')
 const {categoryValidation,categoryUpdate} = require('./App/validations/categoryValidation')
-const {productSchema} = require('./App/validations/productValidation')
+const {productSchema,productUpdate} = require('./App/validations/productValidation')
 const {GRNValidation} = require('./App/validations/GRNvalidation')
 const {cartValidation} = require('./App/validations/cartValidation')
 const {orderSchema} = require('./App/validations/orderValidation')
@@ -29,15 +29,13 @@ const GRNCtlr = require('./App/controllers/GRNCtlr')
 const cartCtlr = require('./App/controllers/cartCtlr')
 const orderCtlr = require('./App/controllers/orderCtlr')
 
-//user-[admin,employee]
+//user
 app.post("/api/user/register",checkSchema(userRegisterSchema), userCtlr.register) //need review
 app.get("/api/user/verify/:token", userCtlr.verify) //need review
 app.post("/api/user/login",checkSchema(userLoginSchema), userCtlr.login)
 app.put("/api/user/profileUpdate/:id",checkSchema(userRegisterSchema), authenticateUser,authorizeUser(['admin','employee']), userCtlr.Update)
 app.delete("/api/user/employeeDelete/:id",authenticateUser,authorizeUser(['admin','employee']),userCtlr.delete)
 app.get("/api/user/profile/:id", authenticateUser, userCtlr.profile)
-
-//user-[vendor, retailer]
 app.post("/api/user/creation",checkSchema(userRegisterSchema), authenticateUser,authorizeUser(['employee']), userCtlr.creation)
 app.get("/api/allVendors", authenticateUser, authorizeUser(['employee']), userCtlr.allvendors)
 app.get("/api/Vendors/:companyName", authenticateUser, authorizeUser(['employee']), userCtlr.companyVendors)
@@ -49,10 +47,11 @@ app.delete("/api/category/delete/:id",authenticateUser,authorizeUser(['employee'
 app.get("/api/categories", categoryCtlr.allcategory)
 
 //product
-app.post("/api/product/creation",upload.array('images', 5),checkSchema(productSchema),authenticateUser,authorizeUser(['employee']), productCtlr.create)
-app.put("/api/product/update/:id",upload.array('images', 5),checkSchema(productSchema),authenticateUser,authorizeUser(['employee']), productCtlr.update)
+app.post("/api/product/creation",upload.array('image',5),checkSchema(productSchema),authenticateUser,authorizeUser(['employee']), productCtlr.create)
+app.put("/api/product/update/:id",upload.array('image', 5),checkSchema(productUpdate),authenticateUser,authorizeUser(['employee']), productCtlr.update)
 app.delete("/api/product/delete/:id",authenticateUser,authorizeUser(['employee']), productCtlr.delete)
-app.get("/api/product/:CategoryId",authenticateUser,authorizeUser(['employee','retailer']), productCtlr.allProductsOfCategory)
+app.get("/api/product/:Categoryid",authenticateUser,authorizeUser(['employee','retailer']), productCtlr.allProductsOfCategory)
+app.put("/api/productSoftDelete/:id", authenticateUser,authorizeUser(['employee']),productCtlr.softDelete)
 
 //GRN
 app.post("/api/GRN/creation",checkSchema(GRNValidation),authenticateUser,authorizeUser(['employee']),GRNCtlr.creation)

@@ -34,7 +34,6 @@ const categoryValidation = {
     }
 }
 
-
 const categoryUpdate = {
     categoryName : {
         notEmpty :{
