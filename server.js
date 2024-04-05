@@ -14,7 +14,7 @@ const {userRegisterSchema, userLoginSchema} = require('./App/validations/userVal
 const {categoryValidation,categoryUpdate} = require('./App/validations/categoryValidation')
 const {productSchema,productUpdate} = require('./App/validations/productValidation')
 const {GRNValidation} = require('./App/validations/GRNvalidation')
-const {cartValidation} = require('./App/validations/cartValidation')
+const {cartValidation, cartUpdate} = require('./App/validations/cartValidation')
 const {orderSchema} = require('./App/validations/orderValidation')
 
 //middlewares
@@ -61,8 +61,8 @@ app.post("/api/GRN/creation",checkSchema(GRNValidation),authenticateUser,authori
 //cart
 app.post("/api/cart/addToCart" ,checkSchema(cartValidation),authenticateUser,authorizeUser(['retailer']),cartCtlr.addToCart)
 app.get("/api/cart/details", authenticateUser ,authorizeUser(['retailer']),cartCtlr.details )
-app.put("/api/cartUpdate/:productId",authenticateUser,authorizeUser(['retailer']),cartCtlr.Update)
-app.delete("/api/cartdelete/:productId",authenticateUser,authorizeUser(['retailer']),cartCtlr.delete)
+app.put("/api/cartUpdate/:productId",checkSchema(cartUpdate),authenticateUser,authorizeUser(['retailer']),cartCtlr.Update)
+app.delete("/api/cartdelete",authenticateUser,authorizeUser(['retailer']),cartCtlr.delete)
 
 //order
 // app.post("/api/order/place", checkSchema(orderSchema),authenticateUser,authorizeUser(['retailer']), oderCtlr.place)

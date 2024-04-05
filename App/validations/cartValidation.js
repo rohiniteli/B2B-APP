@@ -25,6 +25,29 @@ const cartValidation={
    }
 }
 
+const cartUpdate ={
+    products : {
+        productId :{
+            isMongoId: {
+                errorMessage: 'should be a valid mongodb id'
+            }
+             },
+        quantity:{
+            custom: {
+                options: (value) => {
+                    if (value <= 0) {
+                        throw new Error('Quantity must be greater than 0');
+                    }
+                    return true;
+                }
+            }
+        },   
+   }
+}
+
+
+
 module.exports ={
-    cartValidation: cartValidation
+    cartValidation: cartValidation,
+    cartUpdate:cartUpdate
 }

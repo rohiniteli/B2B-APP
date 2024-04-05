@@ -36,7 +36,7 @@ cartCtlr.addToCart = async (req, res) => {
         }
         cartObj.TotalPrice = totalPrice;
       
-        let cart = await Cart.findOne({ retailerId: req.currentUser.id, TotalPrice:cartObj.TotalPrice});
+        let cart = await Cart.findOne({ retailerId: req.currentUser.id});
         if (!cart) {
             cart = new Cart({ retailerId: req.currentUser.id, products: [],TotalPrice:cartObj.TotalPrice});
         }
@@ -51,50 +51,36 @@ cartCtlr.addToCart = async (req, res) => {
 
 cartCtlr.details = async(req, res)=>{
     try {
-        const cartDetails = await Cart.find({ retailerId: req.user._id }).populate('products.productId');
+        const cartDetails = await Cart.find({ retailerId: req.currentUser.id })
         res.status(200).json({ cartDetails });
     } catch (error) {
         console.error('Error fetching cart details:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 }
 
 cartCtlr.delete = async (req, res) => {
     try {
-        const productId = req.params.productId;
-        const retailerId = req.user._id;
-        const cart = await Cart.findOne({ retailerId });
-
+        const cart = await Cart.findOneAndDelete({ retailerId: req.currentUser.id });
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
-        const productIndex = cart.products.findIndex(product => product.productId === productId);
-
-        if (productIndex === -1) {
-            return res.status(404).json({ message: 'Product not found in the cart' });
-        }
-        cart.products.splice(productIndex, 1);
-        await cart.save();
-        res.status(200).json({ message: 'Product deleted from the cart successfully', cart });
+        res.status(200).json({ message: 'Cart deleted successfully' });
     } catch (error) {
-        console.error('Error deleting product from cart:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
 cartCtlr.Update = async (req, res) => {
     try {
         const productId = req.params.productId;
-        const retailerId = req.user._id;
         const { quantity } = req.body;
-
-        const cart = await Cart.findOne({ retailerId });
+        const cart = await Cart.findOne({ retailerId:req.currentUser.id });
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
-
-        const product = cart.products.find(product => product.productId === productId);
-        if (!product) {
+        const product = cart.products.find(product => product.productId.toString() === productId);
+        if (!product){
             return res.status(404).json({ message: 'Product not found in the cart' });
         }
 
@@ -109,12 +95,12 @@ cartCtlr.Update = async (req, res) => {
         }
         product.quantity = updatedQuantity;
         await cart.save();
-        await Cart.updateOne({ _id: cart._id }, { status: 'active' });
+        // await Cart.updateOne({ _id: cart._id }, { status: 'active' });
         res.status(200).json({ message: 'Product quantity updated successfully', cart });
 
     } catch (error) {
         console.error('Error updating product quantity:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
