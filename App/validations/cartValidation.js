@@ -3,33 +3,31 @@ const Product =require('../modules/product')
 const mongoose =require('mongoose')
 
 const cartValidation={
-    'products.*.productId': {
-        notEmpty: {
-            errorMessage: 'productId is required'
-        },
-        custom: {
-            options: async function (value) {
-                if (!value || !mongoose.Types.ObjectId.isValid(value)) {
-                    throw new Error('Invalid productId');
-                }
-                return true;
+    products : {
+        productId :{
+            notEmpty: {
+                errorMessage: 'productId is required'
+            },
+            isMongoId: {
+                errorMessage: 'should be a valid mongodb id'
             }
-        }
-    },
-    'products.*.quantity': {
-        notEmpty: {
-            errorMessage: 'Quantity is required'
-        },
-        custom: {
-            options: (value) => {
-                if (value <= 0) {
-                    throw new Error('Quantity must be greater than 0');
+             },
+        quantity:{
+            notEmpty: {
+                errorMessage: 'Quantity is required'
+            },
+            custom: {
+                options: (value) => {
+                    if (value <= 0) {
+                        throw new Error('Quantity must be greater than 0');
+                    }
+                    return true;
                 }
-                return true;
             }
-        }
-    },
+        },
+       
    }
+}
 
 module.exports ={
     cartValidation: cartValidation

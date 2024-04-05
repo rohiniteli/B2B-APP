@@ -18,6 +18,13 @@ userSchema = new Schema({
             return this.role === 'employee' ? false : true
         }
     },
+    address: {
+        area : String,
+        landmark : String,
+        state: String,
+        city: String,
+        pincode: Number
+    }                  
     }, {timestamps: true})
 
 const User = model('User', userSchema)

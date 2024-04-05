@@ -1,4 +1,5 @@
 const User = require('../modules/user')
+const axios = require('axios')
 
 const userRegisterSchema = {
    userName : {
@@ -57,7 +58,7 @@ const userRegisterSchema = {
                         }else{
                             throw new Error('mobile number already registered')
                         }
-                    }
+                  }
             }
          },
          role :{
@@ -89,8 +90,30 @@ const userRegisterSchema = {
             },
             trim : true
         },
+        address :{
+            custom:{
+                options:async function(value,{req}){
+                    if(req.body.role==='retailer'){
+                        if(!value){
+                            throw new Error('address is required for retailers')
+                        }else{
+                           try{
+                            const response =await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(value)}&format=json&apiKey=50825159992e4c739e4288029586e826`);
+                            const { features } = response.data;
+                            if(features.length===0){
+                                throw new Error('Invalid address');
+                            }
+                           }
+                           catch(error){
+                            throw new Error('Error verifying address');
+                           } 
+                        }
+                    }
+                    return true
+                }
+            }
+         }
         }
-
 
  const userLoginSchema = {
     email : {

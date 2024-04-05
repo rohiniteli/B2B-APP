@@ -72,8 +72,8 @@ const productSchema = {
    image:{
         custom :{
             options : function(value,{req}){
-                if(!req.file){
-                    throw new Error('Image is required');
+                if(!req.files){
+                    throw new Error('Images is required');
                 }else{
                     return true
                 }
@@ -87,6 +87,62 @@ const productSchema = {
     }
 }
 
+const productUpdate = {
+    productName : {
+        optional: true,
+        trim : true,
+         },
+         
+    categoryId :{
+        optional :true,
+        trim :true,
+        custom :{
+            options : async function(value,{req}){
+         const CategoryId = await Category.findOne({_id:value})
+        if(!CategoryId){
+          throw new Error('Category not exist')
+        }else{
+            return true
+        }
+      }
+     }
+    },
+   Mrp:{
+    optional : true,
+     custom:{
+        options : async function(value){
+            if(value<=0){
+                throw new Error('Mrp must be greater then 0')
+            }else{
+                return true
+            }
+        }
+     }
+    },
+    Discount :{
+      optional :true,
+      custom:{
+        options : async function(value){
+            if(value<0){
+                throw new Error('discount must be greater then 0')
+            }else{
+                return true
+            }
+        }
+     }
+    },
+    expirydays :{
+       optional :true
+    },
+   image:{
+        optional:true
+    },
+    description :{
+        optional :true
+    }
+}
+
 module.exports = {
-    productSchema :productSchema
+    productSchema :productSchema,
+    productUpdate:productUpdate
 }

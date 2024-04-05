@@ -3,33 +3,45 @@ const {validationResult} = require('express-validator')
 const Product = require('../modules/product')
 
 const cartCtlr ={}
- 
-cartCtlr.addToCart =async (req, res) => {
+
+cartCtlr.addToCart = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const {  products } = req.body;
     try {
+        const body = req.body;
+        const cartObj = { ...body };
+        console.log(cartObj)
+        const productIds = cartObj.products.map(ele => ele.productId);
+        const cartProducts = await Promise.all(productIds.map(id => {
+            return Product.findById(id);
+        }));
+        console.log('cartProducts:', cartProducts);
+
         let totalPrice = 0;
-        if (products && products.length > 0) {
-            for (const product of products) {
-                totalPrice += product.quantity * product.B2Bprice;
+        for (let i = 0; i < cartProducts.length; i++) {
+            const existingProductIndex = cartObj.products.findIndex(p => p.productId === productIds[i]);
+            if (existingProductIndex !== -1) {
+                cartObj.products[existingProductIndex].quantity += 1; // Increase quantity
+            } else {
+                cartObj.products.push({ productId: productIds[i], quantity: 1 }); // Add new product
             }
-        } else {
-            throw new Error('No products found in the request');
+            cartObj.products[i].productDetails = cartProducts[i]; // Store product details in cart
+            totalPrice += cartObj.products[i].quantity * cartProducts[i].B2Bprice;
         }
-        const newCart = new Cart({
-            retailerId: req.user._id,
-            products,
-            totalPrice,
-        });
-        await newCart.save();
-        await Cart.updateOne({ _id: newCart._id }, { status: 'active' });
-        res.status(201).json({ message: 'Items added to cart successfully', cart: newCart });
+        cartObj.TotalPrice = totalPrice;
+        let cart = await Cart.findOne({ retailerId: req.currentUser.id, status: 'active', TotalPrice:cartObj.TotalPrice});
+        if (!cart) {
+            cart = new Cart({ retailerId: req.currentUser.id, products: [], TotalPrice:cartObj.TotalPrice});
+        }
+        console.log(cart);
+        cart.products = cartObj.products; // Set products to updated products array
+        await cart.save();
+
+        res.status(201).json({ message: 'Items added to cart successfully', cart });
     } catch (error) {
-        console.error('Error adding items to cart:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
