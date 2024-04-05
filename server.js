@@ -59,15 +59,15 @@ app.post("/api/GRN/creation",checkSchema(GRNValidation),authenticateUser,authori
 // app.delete("/api/GRN/delete", authenticateUser,authorizeUser(['employee']),GRNCtlr.delete )
 
 //cart
-app.post("/api/cart/addToCart" ,checkSchema(cartValidation),authenticateUser,authorizeUser(['retailer']),cartCtlr.addToCart)
+app.post("/api/cart/addToCart",checkSchema(cartValidation),authenticateUser,authorizeUser(['retailer']),cartCtlr.addToCart)
 app.get("/api/cart/details", authenticateUser ,authorizeUser(['retailer']),cartCtlr.details )
 app.put("/api/cartUpdate/:productId",checkSchema(cartUpdate),authenticateUser,authorizeUser(['retailer']),cartCtlr.Update)
 app.delete("/api/cartdelete",authenticateUser,authorizeUser(['retailer']),cartCtlr.delete)
 
 //order
-// app.post("/api/order/place", checkSchema(orderSchema),authenticateUser,authorizeUser(['retailer']), oderCtlr.place)
-// app.get("/api/order/details/:id", authenticateUser, authorizeUser(['retailer']), orderCtlr.details)
-// app.get("/api/order/details", authenticateUser, authorizeUser(['employee']), orderCtlr.details)
+app.post("/api/order/place", checkSchema(orderSchema),authenticateUser,authorizeUser(['retailer']), orderCtlr.place)
+app.get("/api/order/details/:orderId", authenticateUser, authorizeUser(['retailer']), orderCtlr.details)
+app.get("/api/order/details", authenticateUser, authorizeUser(['retailer']), orderCtlr.lists)
 
 app.listen(process.env.PORT, ()=>{
     console.log('server is running on port', process.env.PORT)

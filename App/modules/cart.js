@@ -18,6 +18,10 @@ const cartSchema =new Schema({
             Discount:Number,
             B2Bprice: Number}],
     TotalPrice : Number,
+    orderPlaced: {
+        type: Boolean,
+        default: false
+    }
     },{timestamps : true})
 
 const Cart = model('Cart',cartSchema)
