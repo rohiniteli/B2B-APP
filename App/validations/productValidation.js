@@ -5,7 +5,7 @@ const Category = require('../modules/category')
 const productSchema = {
     productName : {
         notEmpty :{
-            errorMessage :'userName is required' 
+            errorMessage :'product name  is required' 
         },
         trim : true,
         custom :{
