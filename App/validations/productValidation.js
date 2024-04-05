@@ -20,7 +20,7 @@ const productSchema = {
           }
          },
          
-    categoryId :{
+ categoryId :{
         notEmpty :{
             errorMessage :'categoryid is required'
         },

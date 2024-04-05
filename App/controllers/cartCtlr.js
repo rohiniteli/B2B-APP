@@ -42,6 +42,7 @@ cartCtlr.addToCart = async (req, res) => {
         }
         console.log(cart);
         cart.products = updatedProducts
+        cart.orderPlaced = false;
         await cart.save();
         res.status(201).json({ message: 'Items added to cart successfully', cart });
     } catch (error) {
