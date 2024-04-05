@@ -13,9 +13,6 @@ const cartValidation={
             }
              },
         quantity:{
-            notEmpty: {
-                errorMessage: 'Quantity is required'
-            },
             custom: {
                 options: (value) => {
                     if (value <= 0) {
@@ -24,8 +21,7 @@ const cartValidation={
                     return true;
                 }
             }
-        },
-       
+        },   
    }
 }
 

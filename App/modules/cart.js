@@ -13,13 +13,11 @@ const cartSchema =new Schema({
             quantity : {
                 type : Number,
                 default :1
-            }}],
+            },
+            Mrp:Number,
+            Discount:Number,
+            B2Bprice: Number}],
     TotalPrice : Number,
-    status: {
-        type: String,
-        enum: ['active', 'completed', 'abandoned'],
-        default: 'active'
-    }
     },{timestamps : true})
 
 const Cart = model('Cart',cartSchema)

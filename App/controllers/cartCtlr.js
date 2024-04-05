@@ -17,28 +17,32 @@ cartCtlr.addToCart = async (req, res) => {
         const cartProducts = await Promise.all(productIds.map(id => {
             return Product.findById(id);
         }));
-        console.log('cartProducts:', cartProducts);
-
         let totalPrice = 0;
+        const updatedProducts = [];
         for (let i = 0; i < cartProducts.length; i++) {
-            const existingProductIndex = cartObj.products.findIndex(p => p.productId === productIds[i]);
-            if (existingProductIndex !== -1) {
-                cartObj.products[existingProductIndex].quantity += 1; // Increase quantity
-            } else {
-                cartObj.products.push({ productId: productIds[i], quantity: 1 }); // Add new product
-            }
-            cartObj.products[i].productDetails = cartProducts[i]; // Store product details in cart
-            totalPrice += cartObj.products[i].quantity * cartProducts[i].B2Bprice;
+            const product = cartProducts[i];
+            product.Stock -= 1; // Reduce the product stock
+            await product.save();
+            const cartProduct = {
+                productId: product._id,
+                quantity: 1, // Default quantity is 1
+                productDetails: product,
+                Mrp: product.Mrp, // Include MRP
+                Discount: product.Discount, // Include discount
+                B2Bprice: product.B2Bprice
+            };
+            updatedProducts.push(cartProduct);
+            totalPrice += 1 * product.B2Bprice;
         }
         cartObj.TotalPrice = totalPrice;
-        let cart = await Cart.findOne({ retailerId: req.currentUser.id, status: 'active', TotalPrice:cartObj.TotalPrice});
+      
+        let cart = await Cart.findOne({ retailerId: req.currentUser.id, TotalPrice:cartObj.TotalPrice});
         if (!cart) {
-            cart = new Cart({ retailerId: req.currentUser.id, products: [], TotalPrice:cartObj.TotalPrice});
+            cart = new Cart({ retailerId: req.currentUser.id, products: [],TotalPrice:cartObj.TotalPrice});
         }
         console.log(cart);
-        cart.products = cartObj.products; // Set products to updated products array
+        cart.products = updatedProducts
         await cart.save();
-
         res.status(201).json({ message: 'Items added to cart successfully', cart });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error: error.message });
